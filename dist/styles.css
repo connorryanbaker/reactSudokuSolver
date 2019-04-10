@@ -1,0 +1,8 @@
+.grid-row {
+  list-style: none;
+  display: flex;
+}
+
+.grid-cell {
+  margin: 0 8px;
+}
