@@ -32,8 +32,6 @@ export class Board extends React.Component {
 
 
   render() {
-    console.log(this.props.board.fixedCells());
-    console.log(this.props.board);
     const uls = this.state.grid.map((row, i) => {
       return <ul className="grid-row">{row.map((el, idx) => {
         return <Tile value={el} key={idx * (i + 1)}/>;
@@ -115,6 +113,46 @@ export class PojoBoard {
       }
     }
     return squares;
+  }
+
+  rowOf(pos) {
+    return rows()[pos[0]];
+  }
+
+  columnOf(pos) {
+    return columns()[pos[1]];
+  }
+
+  squareOf(pos) {
+    const [i,j] = pos;
+    let squares = this.squares();
+    let square;
+    if (j < 3) {
+      if (i < 3) {
+        square = squares[0];
+      } else if (i < 6) {
+        square = squares[3];
+      } else {
+        square = squares[6];
+      };
+    } else if (j < 6) {
+      if (i < 3) {
+        square = squares[1];
+      } else if (i < 6) {
+        square = squares[4];
+      } else {
+        square = squares[7];
+      };
+    } else {
+      if (i < 3) {
+        square = squares[2];
+      } else if (i < 6) {
+        square = squares[5];
+      } else {
+        square = squares[8];
+      };
+    }
+    return square;
   }
 
   fixedCells() {

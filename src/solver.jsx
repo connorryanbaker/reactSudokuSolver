@@ -1,15 +1,15 @@
 import React from 'react';
-import Board from './board';
+import { Board } from './board';
 
 class SudokuSolver extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
-    console.log(this.props);
+    console.log(this.props.board.squareOf([5,6]));
     return (
       <div>
-        {this.props.board}
+        <Board board={this.props.board} />
       </div>
     )
   }
