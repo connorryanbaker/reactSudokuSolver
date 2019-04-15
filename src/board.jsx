@@ -33,8 +33,8 @@ export class Board extends React.Component {
 
   render() {
     const uls = this.state.grid.map((row, i) => {
-      return <ul className="grid-row">{row.map((el, idx) => {
-        return <Tile value={el} key={idx * (i + 1)}/>;
+      return <ul key={i} className="grid-row">{row.map((el, idx) => {
+        return <Tile value={el} idx={idx * (i + 1)}/>;
       })
       }</ul>;
     });
@@ -167,32 +167,20 @@ export class PojoBoard {
     return fixed;
   }
 
-  findValue(pos) {
-    const [row,col] = pos;
-    let value = this.grid[row][col];
-    const allValues = this.squareOf(pos).concat(this.rowOf(pos)).concat(this.columnOf(pos));
-    const takenValues = allValues.filter(v => v !== value && v > 0);
-    const possibleValues = [1,2,3,4,5,6,7,8,9].filter(v => {
-      return takenValues.indexOf(v) === -1;
-    });
-    return possibleValues;
+  unfixedCells() {
+    const cells = [];
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (this.ogGrid[i][j] == 0) {
+          cells.push([i,j]);
+        } 
+      }
+    }
+    return cells;
   }
 
   updateTile(pos, val) {
     const [row, col] = pos;
     this.grid[row][col] = val;
-  }
-
-  segmentSolved(arr) {
-    for (let i = 0; i < 9; i++) {
-      let sorted = arr[i].sort((a, b) => a - b);
-      for (let j = 0; j < 9; j++) {
-        if (sorted[j] !== j + 1) {
-          return false;
-        }
-      }
-
-    }
-    return true;
   }
 }
