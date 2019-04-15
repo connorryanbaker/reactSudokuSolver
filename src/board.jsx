@@ -10,6 +10,7 @@ class Board extends React.Component {
     this.rows = this.rows.bind(this);
     this.columns = this.columns.bind(this);
     this.squares = this.squares.bind(this);
+    this.updateTile = this.updateTile.bind(this);
   }
 
   configureGrid(str) {
@@ -73,10 +74,25 @@ class Board extends React.Component {
     return squares;
   }
 
+  updateTile(pos, val) {
+    const [row, col] = pos;
+    const newGrid = this.state.grid;
+    newGrid[row][col] = val;
+    return this.setState({
+      grid: newGrid
+    });
+  }
+
+  componentDidMount() {
+    this.updateTile([0,0], 7);
+  }
+
   render() {
-    console.log(this.columns());
     const uls = this.state.grid.map((row, i) => {
-      return <ul className="grid-row">{row.map((el, idx) => <Tile value={el} key={idx * (i + 1)}/>)}</ul>;
+      return <ul className="grid-row">{row.map((el, idx) => {
+        return <Tile value={el} key={idx * (i + 1)}/>;
+      })
+      }</ul>;
     });
     return (
       <div>
