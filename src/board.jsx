@@ -1,16 +1,59 @@
 import React from 'react';
 import Tile from './tile';
-class Board extends React.Component {
+export class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: this.configureGrid(this.props.startString)
+      grid: this.configureGrid(this.props.board.startString),
+      ogGrid: this.configureGrid(this.props.board.startString)
     };
-    this.configureGrid = this.configureGrid.bind(this);
-    this.rows = this.rows.bind(this);
-    this.columns = this.columns.bind(this);
-    this.squares = this.squares.bind(this);
-    this.updateTile = this.updateTile.bind(this);
+  }
+
+  configureGrid(str) {
+    const grid = [];
+    for (let i = 0; i < 9; i++) {
+      let idx = i * 9;
+      grid.push(str.slice(idx, idx + 9).split(""));
+    }
+    return grid.map(row => {
+      return row.map(el => {
+        return parseInt(el);
+      });
+    });
+  }
+  updateTile(pos, val) {
+    const [row, col] = pos;
+    const newGrid = this.state.grid;
+    newGrid[row][col] = val;
+    return this.setState({
+      grid: newGrid
+    });
+  }
+
+
+  render() {
+    console.log(this.props.board.fixedCells());
+    console.log(this.props.board);
+    const uls = this.state.grid.map((row, i) => {
+      return <ul className="grid-row">{row.map((el, idx) => {
+        return <Tile value={el} key={idx * (i + 1)}/>;
+      })
+      }</ul>;
+    });
+    return (
+      <div>
+        {uls}
+      </div>
+    )
+  }
+}
+
+
+export class PojoBoard {
+  constructor(startString) {
+    this.grid = this.configureGrid(startString);
+    this.ogGrid = this.configureGrid(startString);
+    this.startString = startString;
   }
 
   configureGrid(str) {
@@ -27,46 +70,46 @@ class Board extends React.Component {
   }
 
   columns() {
-    const columns = Array.from(this.state.grid, () => new Array(9));
+    const columns = Array.from(this.grid, () => new Array(9));
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
-        columns[j][i] = this.state.grid[i][j];
+        columns[j][i] = this.grid[i][j];
       }
     }
     return columns;
   }
 
   rows() {
-    return this.state.grid;
+    return this.grid;
   }
 
   squares() {
-    const squares = Array.from(this.state.grid, () => []);
+    const squares = Array.from(this.grid, () => []);
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         if (j < 3) {
           if (i < 3) {
-            squares[0].push(this.state.grid[i][j]);
+            squares[0].push(this.grid[i][j]);
           } else if (i < 6) {
-            squares[3].push(this.state.grid[i][j]);
+            squares[3].push(this.grid[i][j]);
           } else {
-            squares[6].push(this.state.grid[i][j]);
+            squares[6].push(this.grid[i][j]);
           };
         } else if (j < 6) {
           if (i < 3) {
-            squares[1].push(this.state.grid[i][j]);
+            squares[1].push(this.grid[i][j]);
           } else if (i < 6) {
-            squares[4].push(this.state.grid[i][j]);
+            squares[4].push(this.grid[i][j]);
           } else {
-            squares[7].push(this.state.grid[i][j]);
+            squares[7].push(this.grid[i][j]);
           };
         } else {
           if (i < 3) {
-            squares[2].push(this.state.grid[i][j]);
+            squares[2].push(this.grid[i][j]);
           } else if (i < 6) {
-            squares[5].push(this.state.grid[i][j]);
+            squares[5].push(this.grid[i][j]);
           } else {
-            squares[8].push(this.state.grid[i][j]);
+            squares[8].push(this.grid[i][j]);
           };
         }
       }
@@ -74,32 +117,33 @@ class Board extends React.Component {
     return squares;
   }
 
+  fixedCells() {
+    let fixed = [];
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (this.ogGrid[i][j] > 0) {
+          fixed.push([i, j]);
+        }
+      }
+    }
+    return fixed;
+  }
+
   updateTile(pos, val) {
     const [row, col] = pos;
-    const newGrid = this.state.grid;
-    newGrid[row][col] = val;
-    return this.setState({
-      grid: newGrid
-    });
+    this.grid[row][col] = val;
   }
 
-  componentDidMount() {
-    this.updateTile([0,0], 7);
-  }
+  segmentSolved(arr) {
+    for (let i = 0; i < 9; i++) {
+      let sorted = arr[i].sort((a, b) => a - b);
+      for (let j = 0; j < 9; j++) {
+        if (sorted[j] !== j + 1) {
+          return false;
+        }
+      }
 
-  render() {
-    const uls = this.state.grid.map((row, i) => {
-      return <ul className="grid-row">{row.map((el, idx) => {
-        return <Tile value={el} key={idx * (i + 1)}/>;
-      })
-      }</ul>;
-    });
-    return (
-      <div>
-        {uls}
-      </div>
-    )
+    }
+    return true;
   }
 }
-
-export default Board;
