@@ -5,8 +5,9 @@ class SudokuSolver extends React.Component {
   constructor(props) {
     super(props);
   }
+
   render() {
-    console.log(this.props.board.squareOf([5,6]));
+    console.log(this.props.board.findValue([0,0]));
     return (
       <div>
         <Board board={this.props.board} />

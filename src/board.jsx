@@ -116,11 +116,11 @@ export class PojoBoard {
   }
 
   rowOf(pos) {
-    return rows()[pos[0]];
+    return this.rows()[pos[0]];
   }
 
   columnOf(pos) {
-    return columns()[pos[1]];
+    return this.columns()[pos[1]];
   }
 
   squareOf(pos) {
@@ -165,6 +165,17 @@ export class PojoBoard {
       }
     }
     return fixed;
+  }
+
+  findValue(pos) {
+    const [row,col] = pos;
+    let value = this.grid[row][col];
+    const allValues = this.squareOf(pos).concat(this.rowOf(pos)).concat(this.columnOf(pos));
+    const takenValues = allValues.filter(v => v !== value && v > 0);
+    const possibleValues = [1,2,3,4,5,6,7,8,9].filter(v => {
+      return takenValues.indexOf(v) === -1;
+    });
+    return possibleValues;
   }
 
   updateTile(pos, val) {
