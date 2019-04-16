@@ -6,8 +6,11 @@ export class SudokuSolver extends React.Component {
     super(props);
   }
 
+  componentDidMount() {
+    this.props.solver.solve();
+  }
+
   render() {
-    console.log(this.props.solver.findAllValues());
     return (
       <div>
         <Board board={this.props.solver.board} />
@@ -19,36 +22,77 @@ export class SudokuSolver extends React.Component {
 export class PojoSolver {
   constructor(board) {
     this.board = board;
+    this.solvedStack = [];
+    this.unsolvedStack = this.board.unfixedCells().reverse();
+  }
+
+  currentCell() {
+    let idx = this.unsolvedStack.length - 1;
+    return this.unsolvedStack[idx];
   }
 
   findValue(pos) {
     const [row, col] = pos;
-    let value = this.board.grid[row][col];
-    const allValues = this.board.squareOf(pos).concat(this.board.rowOf(pos)).concat(this.board.columnOf(pos));
-    const takenValues = allValues.filter(v => v !== value && v > 0);
-    const possibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(v => {
-      return takenValues.indexOf(v) === -1;
-    });
-    return possibleValues;
+    let temp = this.board.grid[row][col] + 1;
+    while (temp < 10) {
+      if (this.legalValue(pos, temp)) {
+        this.board.updateTile(pos, temp);
+        this.printRows();
+        return true;
+      } else {
+        temp++;
+      }
+    } 
+    return false;
   }
 
-  findAllValues() {
-    const map = {}
-    this.board.unfixedCells().forEach((pos) => {
-      map[pos] = this.findValue(pos);
-    });
-    return map;
+  backtrack() {
+    if (this.findValue(this.currentBacktrackCell())) {
+      return;
+    } else {
+      this.unsolvedStack.push(this.solvedStack.pop());
+      this.printRows();
+      this.board.updateTile(this.currentCell(), 0);
+      this.printRows();
+      return this.backtrack();
+    }
+  }
+
+  currentBacktrackCell() {
+    return this.solvedStack[this.solvedStack.length - 1];
+  }
+
+  solve() {
+    while (!this.isSolved()) {
+      if (this.findValue(this.currentCell())) {
+        this.solvedStack.push(this.unsolvedStack.pop());
+      } else {
+        this.backtrack();
+      }
+    }
+  }
+
+  printRows() {
+    this.board.grid.forEach(row => console.log(row.join(" ")));
+    console.log("***");
+  }
+
+  legalValue(pos, val) {
+    const bool = !this.board.rowOf(pos).includes(val) &&
+      !this.board.columnOf(pos).includes(val) &&
+        !this.board.squareOf(pos).includes(val);
+    return bool;
   }
 
   segmentSolved(arr) {
     for (let i = 0; i < 9; i++) {
-      let sorted = arr[i].sort((a, b) => a - b);
-      for (let j = 0; j < 9; j++) {
-        if (sorted[j] !== j + 1) {
-          return false;
+      for (let j = 1; j < 10; j++) {
+        let count = 0;
+        for (let k = 0; k < 9; k++) {
+          if (arr[i][k] == j) count++;
         }
+        if (count != 1) return false;
       }
-
     }
     return true;
   }
@@ -56,7 +100,9 @@ export class PojoSolver {
   isSolved() {
     if (this.segmentSolved(this.board.rows())) {
       if (this.segmentSolved(this.board.columns())) {
-        return this.segmentSolved(this.board.squares());
+        if (this.segmentSolved(this.board.squares())) {
+          return true;
+        }
       }
     }
     return false;

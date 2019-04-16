@@ -50,8 +50,10 @@ export class Board extends React.Component {
 export class PojoBoard {
   constructor(startString) {
     this.grid = this.configureGrid(startString);
+    debugger
     this.ogGrid = this.configureGrid(startString);
     this.startString = startString;
+    debugger
   }
 
   configureGrid(str) {
@@ -171,7 +173,7 @@ export class PojoBoard {
     const cells = [];
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
-        if (this.ogGrid[i][j] == 0) {
+        if (this.ogGrid[i][j] === 0) {
           cells.push([i,j]);
         } 
       }
@@ -180,6 +182,7 @@ export class PojoBoard {
   }
 
   updateTile(pos, val) {
+    debugger
     const [row, col] = pos;
     this.grid[row][col] = val;
   }
