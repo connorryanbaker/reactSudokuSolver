@@ -3,40 +3,10 @@ import Tile from './tile';
 export class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      grid: this.configureGrid(this.props.board.startString),
-      ogGrid: this.configureGrid(this.props.board.startString)
-    };
   }
-
-  configureGrid(str) {
-    const grid = [];
-    for (let i = 0; i < 9; i++) {
-      let idx = i * 9;
-      grid.push(str.slice(idx, idx + 9).split(""));
-    }
-    return grid.map(row => {
-      return row.map(el => {
-        return parseInt(el);
-      });
-    });
-  }
-  updateTile(pos, val) {
-    const [row, col] = pos;
-    const newGrid = this.state.grid;
-    newGrid[row][col] = val;
-    return this.setState({
-      grid: newGrid
-    });
-  }
-
-
   render() {
-    const uls = this.state.grid.map((row, i) => {
-      return <ul key={i} className="grid-row">{row.map((el, idx) => {
-        return <Tile value={el} idx={idx * (i + 1)}/>;
-      })
-      }</ul>;
+    const uls = this.props.grid.map((row, i) => {
+      return <Row row={row}/>
     });
     return (
       <div>
@@ -46,14 +16,20 @@ export class Board extends React.Component {
   }
 }
 
+const Row = (props) => {
+  return (
+    <ul className="grid-row">
+      {props.row.map((el) => <Tile value={el} />)}
+    </ul>
+  );
+}
+
 
 export class PojoBoard {
   constructor(startString) {
     this.grid = this.configureGrid(startString);
-    debugger
     this.ogGrid = this.configureGrid(startString);
     this.startString = startString;
-    debugger
   }
 
   configureGrid(str) {
@@ -182,7 +158,6 @@ export class PojoBoard {
   }
 
   updateTile(pos, val) {
-    debugger
     const [row, col] = pos;
     this.grid[row][col] = val;
   }

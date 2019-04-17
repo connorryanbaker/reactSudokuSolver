@@ -4,16 +4,32 @@ import { Board } from './board';
 export class SudokuSolver extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      grid: this.props.solver.board.grid
+    };
   }
 
   componentDidMount() {
-    this.props.solver.solve();
+    this.int = setInterval(() => {
+      this.props.solver.solve();
+      console.log(this.props.solver.isSolved());
+      this.setState({
+        grid: this.props.solver.board.grid
+      });
+    }, 100);
+  }
+
+  componentDidUpdate() {
+    if (this.props.solver.isSolved()) {
+      clearInterval(this.int);
+      console.log(this.props.solver.isSolved());
+    }
   }
 
   render() {
     return (
       <div>
-        <Board board={this.props.solver.board} />
+        <Board grid={this.state.grid} />
       </div>
     )
   }
@@ -37,7 +53,6 @@ export class PojoSolver {
     while (temp < 10) {
       if (this.legalValue(pos, temp)) {
         this.board.updateTile(pos, temp);
-        this.printRows();
         return true;
       } else {
         temp++;
@@ -51,9 +66,7 @@ export class PojoSolver {
       return;
     } else {
       this.unsolvedStack.push(this.solvedStack.pop());
-      this.printRows();
       this.board.updateTile(this.currentCell(), 0);
-      this.printRows();
       return this.backtrack();
     }
   }
@@ -63,12 +76,10 @@ export class PojoSolver {
   }
 
   solve() {
-    while (!this.isSolved()) {
-      if (this.findValue(this.currentCell())) {
-        this.solvedStack.push(this.unsolvedStack.pop());
-      } else {
-        this.backtrack();
-      }
+    if (this.findValue(this.currentCell())) {
+      this.solvedStack.push(this.unsolvedStack.pop());
+    } else {
+      this.backtrack();
     }
   }
 
