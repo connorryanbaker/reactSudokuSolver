@@ -28,8 +28,8 @@ export class SudokuSolver extends React.Component {
 
   render() {
     return (
-      <div>
-        <Board grid={this.state.grid} />
+      <div className="board-wrapper">
+        <Board grid={this.state.grid} fixed={this.props.solver.board.fixedCells()}/>
       </div>
     )
   }

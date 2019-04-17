@@ -3,10 +3,16 @@ import Tile from './tile';
 export class Board extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.fixed)
   }
   render() {
     const uls = this.props.grid.map((row, i) => {
-      return <Row row={row}/>
+      return (<ul className="grid-row">
+                {row.map((el, idx) => {
+                  let klass = this.props.fixed[[i,idx]] ? "fixed" : "unfixed";
+                  return <Tile value={el} klass={klass}/>
+                })}
+              </ul>)
     });
     return (
       <div>
@@ -15,15 +21,6 @@ export class Board extends React.Component {
     )
   }
 }
-
-const Row = (props) => {
-  return (
-    <ul className="grid-row">
-      {props.row.map((el) => <Tile value={el} />)}
-    </ul>
-  );
-}
-
 
 export class PojoBoard {
   constructor(startString) {
@@ -142,7 +139,9 @@ export class PojoBoard {
         }
       }
     }
-    return fixed;
+    const obj = {};
+    fixed.forEach((arr) => obj[arr] = true);
+    return obj;
   }
 
   unfixedCells() {

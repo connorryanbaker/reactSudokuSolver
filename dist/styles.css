@@ -6,3 +6,19 @@
 .grid-cell {
   margin: 0 12px;
 }
+
+* {
+  font-family: 'Lato', sans-serif;
+}
+
+.fixed {
+  color: red;
+}
+
+.board-wrapper {
+  margin: 0 auto;
+}
+
+#root {
+  margin: 0 auto;
+}
